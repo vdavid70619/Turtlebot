@@ -1,0 +1,117 @@
+(libload "roomba")
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#?
+;;
+;;
+(defclass odometry-node object
+    ((-float-) x y angle)
+)
+
+
+#?
+;;
+;;
+(defmethod odometry-node odometry-node (xx yy aa)
+  (setq x xx)
+  (setq y yy)
+  (setq angle aa)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defclass odometry object
+  node-list
+)
+
+
+(defmethod odometry odometry (px py pa)
+  (setq node-list ())
+  (let ((node (new odometry-node px py pa)))
+      (setq node-list (cons node node-list))) 
+)
+
+
+#?
+;;
+;;
+(defmethod odometry get-position-x ()
+  (let* ((node (car node-list))
+	 (xx :node:x))
+    xx)
+)
+
+
+#?
+;;
+;;
+(defmethod odometry get-position-y ()
+  (let* ((node (car node-list))
+	 (yy :node:y))
+    yy)
+)
+
+
+#?
+;;
+;;
+(defmethod odometry get-position-angle ()
+  (let* ((node (car node-list))
+	 (aa :node:angle))
+    aa)
+)
+
+
+
+#? (odometry-update <robot>) 
+;;
+;;
+(defmethod odometry update (rb)
+  (==> rb read-sensors 0)
+  (let* ((angle (==> rb angle))
+	 (distance (==> rb distance))
+	 (new-node ())
+	 (last-node (car node-list))
+	 (xx :last-node:x)
+	 (yy :last-node:y)
+	 (aa :last-node:angle))
+    (print angle distance)
+    ;;(print aa angle)
+    (print xx yy)
+    (setq new-node (new odometry-node 
+			(+ xx (* distance (cos (* (/ angle 180) 3.14))))
+			(+ yy (* distance (sin (* (/ angle 180) 3.14))))
+			(+ aa angle)))
+    (setq node-list (cons new-node node-list))
+    ;;(print (length node-list))
+  ())
+)
+  
+#?
+;;  
+;;
+(defmethod odometry display ()
+  (let ((node ())
+	(last-xx 0)
+	(last-yy 0))
+    (when (not window) (new-window 0 0 1000 1000 "Odometry"))
+    (when node-list
+      (cls)
+      (setq node (car node-list))
+      (draw-circle :node:x :node:y 5)
+      (draw-line :node:x :node:y (+ :node:x (* 5 (cos (* (/ :node:angle 180) 3.14)))) (+ :node:x (* 5 (sin (* (/ :node:angle 180))))))
+      (setq last-xx :node:x)
+      (setq last-yy :node:y))
+  ())
+)
+      
+      
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(de odometry-test (rb)
+  (==> rb drive 20 20)
+  (let ((od (new odometry 50 50 90)))
+    (while 1
+      (==> od update rb)
+      (==> od display)
+      ()))
+)
