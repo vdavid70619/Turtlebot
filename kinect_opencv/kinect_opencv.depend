@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1332662942 source:/home/dai/workshop/kinect_opencv/main.cpp
+	<string>
+	<iostream>
+	<iomanip>
+	<vector>
+	<opencv/cv.h>
+	<opencv/highgui.h>
+	"libfreenect.h"
+	"libfreenect_sync.h"
+
