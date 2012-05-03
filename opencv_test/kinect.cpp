@@ -55,11 +55,9 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp) {
 
  void *cv_threadfunc (void *ptr)
  {
-     cvNamedWindow( FREENECTOPENCV_WINDOW_D, CV_WINDOW_AUTOSIZE );
-     cvNamedWindow( FREENECTOPENCV_WINDOW_N, CV_WINDOW_AUTOSIZE );
      depthimg = cvCreateImage(cvSize(FREENECTOPENCV_DEPTH_WIDTH, FREENECTOPENCV_DEPTH_HEIGHT), IPL_DEPTH_8U, FREENECTOPENCV_DEPTH_DEPTH);
-     rgbimg = cvCreateImage(cvSize(FREENECTOPENCV_RGB_WIDTH, FREENECTOPENCV_RGB_HEIGHT), IPL_DEPTH_8U, FREENECTOPENCV_RGB_DEPTH);
-     tempimg = cvCreateImage(cvSize(FREENECTOPENCV_RGB_WIDTH, FREENECTOPENCV_RGB_HEIGHT), IPL_DEPTH_8U, FREENECTOPENCV_RGB_DEPTH);
+     rgbimg = cvCreateImage(cvSize(FREENECTOPENCV_RGB_WIDTH, FREENECTOPENCV_RGB_HEIGHT), IPL_DEPTH_8U, 3);
+     tempimg = cvCreateImage(cvSize(FREENECTOPENCV_RGB_WIDTH, FREENECTOPENCV_RGB_HEIGHT), IPL_DEPTH_8U, 3);
 
     // use image polling
     while (1) {
@@ -68,15 +66,21 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp) {
             pthread_mutex_lock( &mutex_depth );
             // show image to window
             cvCvtColor(depthimg,tempimg,CV_GRAY2BGR);
-            cvCvtColor(tempimg,tempimg,CV_HSV2BGR);
-            cvShowImage(FREENECTOPENCV_WINDOW_D,tempimg);
+            //cvCvtColor(tempimg,tempimg,CV_HSV2BGR);
+           cvShowImage(FREENECTOPENCV_WINDOW_D,tempimg);
             //unlock mutex for depth image
             pthread_mutex_unlock( &mutex_depth );
 
             //lock mutex for rgb image
             pthread_mutex_lock( &mutex_rgb );
             // show image to window
-            cvCvtColor(rgbimg,tempimg,CV_BGR2RGB);
+            //cvCvtColor(rgbimg,tempimg,CV_BGR2YCrCb);
+            //cvShowImage("YUV",tempimg);
+            cvCvtColor(rgbimg,tempimg,CV_BGR2YUV);
+            //cvShowImage("YUV",tempimg);
+
+            //cvCvtColor(tempimg,rgbimg,CV_YCrCb2BGR);
+            cvShowImage("HSV",tempimg);
             //unlock mutex
             pthread_mutex_unlock( &mutex_rgb );
 
@@ -119,6 +123,9 @@ int main(int argc, char **argv) {
     }
 
     printf("init done\n");
+    freenect_video_format requested_format(FREENECT_VIDEO_RGB);
+    requested_format=FREENECT_VIDEO_IR_8BIT;
+
     freenect_start_depth(f_dev);
     freenect_start_video(f_dev);
 

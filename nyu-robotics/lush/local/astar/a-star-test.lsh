@@ -7,7 +7,6 @@
 ;; grid-map class
 (defclass grid-map object
   grid
- ;; ((-idx-) grid)
   )
 
 (defmethod grid-map display (x y zoom &optional ny nx)
@@ -129,12 +128,6 @@
   (color-rgb 1 0 0)
   (each ((n best-path))
     (fill-rect (* *zoom* :n:y) (* *zoom* :n:x) *zoom* *zoom*)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;(dhc-make
-; ()
-; (grid-map display grid-map)
-;)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (printf "do (astar-init 50 50), paint non-traversible areas, save\n")

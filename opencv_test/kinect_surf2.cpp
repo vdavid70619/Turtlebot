@@ -5,7 +5,7 @@
 #include <pthread.h>
 
 #include <opencv/cv.h>
-#include <opencv/highgui.h>
+//#include <opencv/highgui.h>
 #include <opencv2/features2d/features2d.hpp>
 
 #define FREENECTOPENCV_WINDOW_D "Depthimage"
@@ -97,7 +97,7 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp) {
             //Initialization
             img=tempimg;
             //Detect the keypoints using SURF Detector&Calculate descriptors (feature vectors)
-            int minHessian = 1000;
+            int minHessian = 300;
 
             SurfFeatureDetector detector( minHessian );
             SurfDescriptorExtractor extractor;
