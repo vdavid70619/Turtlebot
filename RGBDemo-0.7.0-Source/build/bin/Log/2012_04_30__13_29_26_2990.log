@@ -1,0 +1,21 @@
+1335806966011554	INFO      	Log	XnLog.cpp	264	OpenNI version is 1.3.2 (Build 1)-Linux-x86 (Apr 30 2012 12:39:46)
+1335806966011578	INFO      	Log	XnLog.cpp	243	Filter Info - minimum severity: ERROR, masks: NONE
+1335806966011588	INFO      	Log	XnLog.cpp	243	Filter Info - minimum severity: WARNING, masks: NONE
+1335806966011597	INFO      	Log	XnLog.cpp	243	Filter Info - minimum severity: WARNING, masks: ALL
+  1610027	WARNING   	xnOS	Linux-x86Threads.cpp	170	Failed to set thread priority (1)
+  1610051	WARNING   	xnUSB	XnUSBLinux-x86.cpp	128	USB events thread: Failed to set thread priority to critical. This might cause loss of data...
+  1610935	WARNING   	xnOS	Linux-x86Threads.cpp	170	Failed to set thread priority (1)
+  1610949	WARNING   	xnUSB	XnUSBLinux-x86.cpp	972	Failed to set thread priority to critical. This might cause loss of data...
+  1869743	WARNING   	DeviceSensorProtocol	XnFrameStreamProcessor.cpp	146	Depth Frame Buffer overflow! current size: 612768
+  1869769	WARNING   	DeviceSensorProtocol	XnFrameStreamProcessor.cpp	138	Depth frame is corrupt!
+  1873593	WARNING   	DeviceSensorRead	XnDepthProcessor.cpp	133	Read: Depth buffer is corrupt. Size is 612768 (!= 614400)
+  2110848	WARNING   	xnOS	Linux-x86Threads.cpp	170	Failed to set thread priority (1)
+  2110879	WARNING   	xnUSB	XnUSBLinux-x86.cpp	972	Failed to set thread priority to critical. This might cause loss of data...
+  2170395	WARNING   	DeviceSensorRead	XnDepthProcessor.cpp	133	Read: Depth buffer is corrupt. Size is 590304 (!= 614400)
+  2170432	WARNING   	DeviceSensorProtocol	XnFrameStreamProcessor.cpp	138	Depth frame is corrupt!
+  2305499	WARNING   	DeviceSensorRead	XnDepthProcessor.cpp	133	Read: Depth buffer is corrupt. Size is 564368 (!= 614400)
+  2305529	WARNING   	DeviceSensorProtocol	XnFrameStreamProcessor.cpp	138	Depth frame is corrupt!
+  5209675	WARNING   	DeviceSensorRead	XnDepthProcessor.cpp	133	Read: Depth buffer is corrupt. Size is 582816 (!= 614400)
+  5209706	WARNING   	DeviceSensorProtocol	XnFrameStreamProcessor.cpp	138	Depth frame is corrupt!
+  5337757	WARNING   	DeviceSensorRead	XnImageProcessor.cpp	105	Read: Image buffer is corrupt. Size is 228972 (!= 307200)
+  5337782	WARNING   	DeviceSensorProtocol	XnFrameStreamProcessor.cpp	138	Image frame is corrupt!

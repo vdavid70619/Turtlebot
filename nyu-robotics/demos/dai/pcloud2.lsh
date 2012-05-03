@@ -1,0 +1,135 @@
+;;;
+;;;
+;;;
+;;;    Extra pcloud manipulate functions
+;;;
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(libload "libidx/idx-float")
+(libload "pcloud/pcloud")
+
+
+#? kinect-R
+;;
+;;
+(defparameter kinect-R [f [f 0.9996503032 0.00749667021 0.00370649143] 
+                          [f -0.0074611370 0.9999269489 -0.00950938377]
+                          [f -0.0037775093 0.0094813966 0.99994791541]])
+
+
+#? kinect-T
+;;
+;;
+(defparameter kinect-T [f 0.029258641 -0.0021920559 -0.0122505026])
+
+
+#? kinect-xyz2rc
+;; parameters to transform xyz coordinates to row-colum data in rgb
+;; First, XYZ' = XYZ.R+T
+;; Then,
+;; [fx_rgb fy_rgb cx_rgb cy_rgb]
+;; numbers are from http://nicolas.burrus.name/index.php/Research/KinectCalibration
+;; Using formula:
+;; r = (x*fx_rgb/z) + cx_rgb
+;; c = (y*fy_rgb/z) + cy_rgb
+;;(defparameter kinect-xyz2rc [f 529.2150809 525.5639363 328.9427203 267.4806817])
+(defparameter kinect-xyz2rc [f 622.332 619.731 316.399 259.357])
+
+#?(pcloud-xyz2rc <xyz> <rc> <kinect-R> <kinect-T> <kinect-xyz2rc>)
+;; <rc> defiend as <n>X<2>
+;; data saved as (r c)
+;; function return <rcxyz> 
+;; defined as <n>X<5> 
+;; data saved as (r c x y z)
+(de pcloud-xyz2rc (xyz rc pr pt pxyz2rc)
+  ((-idx2- (-float-)) rc xyz pr)
+  ((-idx1- (-float-)) pt pxyz2rc)
+  (setq rc (float-matrix (idx-dim xyz 0) 2)) 
+  (let ((xyz2 (idx-copy xyz))
+	(rcxyz (float-matrix (idx-dim xyz 0) 5)))
+    (idx-bloop ((xyz2 xyz2)(xyz xyz)(rc rc)(rcxyz rcxyz))
+      (xyz2 0 (+ (* (xyz 0) (pr 0 0))
+		 (* (xyz 1) (pr 1 0))
+		 (* (xyz 2) (pr 2 0))
+		 (pt 0)))
+      (xyz2 1 (+ (* (xyz 0) (pr 0 1))
+		 (* (xyz 1) (pr 1 1))
+		 (* (xyz 2) (pr 2 1))
+		 (pt 1)))
+      (xyz2 2 (+ (* (xyz 0) (pr 0 2))
+		 (* (xyz 1) (pr 1 2))
+		 (* (xyz 2) (pr 2 2))
+		 (pt 2)))
+      (rc 1 (to-int (+ (/ (* (xyz2 0) (pxyz2rc 0)) (xyz2 2)) (pxyz2rc 2))))
+      (rc 0 (to-int (+ (/ (* (xyz2 1) (pxyz2rc 1)) (xyz2 2)) (pxyz2rc 3))))
+      (rcxyz 0 (rc 0))
+      (rcxyz 1 (rc 1))
+      (rcxyz 2 (xyz 0))
+      (rcxyz 3 (xyz 1))
+      (rcxyz 4 (xyz 2)))
+    rcxyz)
+)
+
+
+;;
+;;
+(de pcloud-display-rcxyzrgb (rcxyz image)
+  (let* ((xxmax 640)
+	 (yymax 480)
+	 (im (ubyte-matrix yymax xxmax 3)))
+    (idx-bloop ((rcxyz rcxyz))
+      (let ((xx (rcxyz 1))
+	    (yy (rcxyz 0))
+	    (zz (rcxyz 4)))
+	;;(print xx yy zz)
+	(when (and (< xx xxmax) (>= xx 0) (< yy yymax) (>= yy 0))
+	  (im yy xx 0 (+ (image yy xx 0) (* zz 0)))
+	  (im yy xx 1 (+ (image yy xx 1) (* zz 0)))
+	  (im yy xx 2 (+ (image yy xx 2) (* zz 0))))
+	))
+    im)
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(dhc-make 
+ ()
+ pcloud-xyz2rc
+)
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(de rcxyzrgb-test ()
+  (libload (concat thisdir "/../freenect/freenect"))
+  (when (not window) (new-window 0 0 1280 480 "rcrgb"))
+  (let* ((q (new freenect 0))
+	 (d (float-matrix 480 640))
+	 (rc (float-matrix 307200 2))
+	 (rgb (float-matrix 307200 3))
+	 (rcd (float-matrix 307200 3))
+	 (cxyz (float-matrix 307200 3))
+	 (vxyz (float-matrix 307200 3))
+	 (stop ())
+	 (dx 100)
+	 (dy 500)
+	 (cx 0.1)
+	 (cy -0.1)
+	 (zoom 300)
+	 (cv 0) (cd 0))
+    (==> q update)
+    (setq cv :q:rgb-frames)
+    (setq cd :q:depth-frames)
+    (while (not stop)
+      (==> q update)
+      (let ((image (==> q get-rgb))
+	    (rawd (==> q get-depth)))
+	(rgb-draw-matrix 0 0 rawd)
+	(pcloud-image2rcdrgb image rawd 2000 rcd rgb)
+	(pcloud-rcd2xyz rcd cxyz kinect-d2m kinect-rcd2xyz identity)
+	(process-depth rawd d)
+	(rgb-draw-matrix 640 0 (pcloud-display-rcxyzrgb (pcloud-xyz2rc cxyz rc kinect-R kinect-T kinect-xyz2rc) image))
+	(setq cv :q:rgb-frames)
+	(setq cd :q:depth-frames)))))

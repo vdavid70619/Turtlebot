@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../nestk/deps/libfreenect/include/libfreenect.h
+stdint.h
+-
+libusb-1.0/libusb.h
+-
+
+/home/dai/Turtlebot/RGBDemo-0.7.0-Source/nestk/deps/libfreenect/examples/glview.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+assert.h
+-
+libfreenect.h
+/home/dai/Turtlebot/RGBDemo-0.7.0-Source/nestk/deps/libfreenect/examples/libfreenect.h
+pthread.h
+-
+GLUT/glut.h
+-
+OpenGL/gl.h
+-
+OpenGL/glu.h
+-
+GL/glut.h
+-
+GL/gl.h
+-
+GL/glu.h
+-
+math.h
+-
+

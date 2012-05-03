@@ -1,0 +1,1 @@
+/usr/bin/gcc  -fPIC -O2 -g   -shared -Wl,-soname,libglew.so -o ../../../lib/libglew.so CMakeFiles/glew.dir/src/glew.c.o -lGLU -lGL -lSM -lICE -lX11 -lXext -Wl,-rpath,:::::: 
